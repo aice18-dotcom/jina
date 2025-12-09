@@ -72,6 +72,7 @@ ITEMS = [
     },
 ]
 
+
 # 세션 상태 초기화 함수
 def init_session_state():
     defaults = {
@@ -85,6 +86,13 @@ def init_session_state():
     for key, value in defaults.items():
         if key not in st.session_state:
             st.session_state[key] = value
+
+
+def safe_rerun():
+    """streamlit 버전에 따라 rerun을 안전하게 호출"""
+    if hasattr(st, "rerun"):
+        st.rerun()
+
 
 init_session_state()
 
@@ -172,7 +180,8 @@ def render_shopping_page():
             st.markdown(f"<p style='text-align:center;'>가격: {item['price']:,}원</p>", unsafe_allow_html=True)
             if st.button("담기", key=f"add_{item['id']}"):
                 st.session_state.cart.append(item)
-                st.experimental_rerun()  # 즉시 화면 갱신
+                # 최신 Streamlit에서는 st.rerun() 사용
+                safe_rerun()
 
     st.markdown("---")
     st.subheader("🧺 장바구니")
@@ -205,6 +214,7 @@ def render_shopping_page():
     with col1:
         if st.button("⬅ 미션 다시 선택하기"):
             st.session_state.step = 1
+            safe_rerun()
 
     with col2:
         if st.button("💳 구매하기"):
@@ -213,6 +223,7 @@ def render_shopping_page():
             else:
                 st.session_state.step = 3
                 st.success("구매 화면으로 이동합니다.")
+                safe_rerun()
 
 
 def render_result_page():
@@ -223,6 +234,7 @@ def render_result_page():
         st.warning("먼저 미션을 선택하고 쇼핑을 진행해주세요.")
         if st.button("미션 선택 화면으로 돌아가기"):
             st.session_state.step = 1
+            safe_rerun()
         return
 
     total = get_cart_total()
@@ -249,6 +261,7 @@ def render_result_page():
         st.info("구매한 물품이 없습니다. 쇼핑 화면으로 돌아가 상품을 담아주세요.")
         if st.button("쇼핑 화면으로 돌아가기"):
             st.session_state.step = 2
+            safe_rerun()
         return
 
     # 장바구니 요약 테이블
@@ -295,13 +308,14 @@ def render_result_page():
     with col1:
         if st.button("⬅ 쇼핑 화면으로 돌아가기"):
             st.session_state.step = 2
+            safe_rerun()
     with col2:
         if st.button("🔄 처음부터 다시 하기"):
             # 상태 초기화
             for key in list(st.session_state.keys()):
                 del st.session_state[key]
             init_session_state()
-            st.experimental_rerun()
+            safe_rerun()
 
 
 # 현재 step에 따라 화면 렌더링
