@@ -87,18 +87,27 @@ def get_xy_match_hint(guess_x, guess_y, tx, ty):
 
 
 def draw_coordinate_plane(show_treasure=False):
-    """좌표평면 그리기 (시도한 점들 + 선택적으로 보물 위치)"""
-    fig, ax = plt.subplots()
-    ax.set_xlim(X_MIN - 1, X_MAX + 1)
-    ax.set_ylim(Y_MIN - 1, Y_MAX + 1)
+    """
+    정사각형 좌표평면 그리기
+    - 가운데 가로축: x축 (y=0)
+    - 가운데 세로축: y축 (x=0)
+    """
+    # 정사각형 비율 유지
+    fig, ax = plt.subplots(figsize=(6, 6))
+
+    # 좌우/위아래 대칭 범위 설정 (정사각형)
+    ax.set_xlim(X_MIN - 0.5, X_MAX + 0.5)
+    ax.set_ylim(Y_MIN - 0.5, Y_MAX + 0.5)
     ax.set_aspect("equal", adjustable="box")
 
-    # 격자와 축 그리기
-    ax.axhline(0, color="black", linewidth=1)
-    ax.axvline(0, color="black", linewidth=1)
+    # 격자선
     ax.grid(True, which="both", linestyle="--", linewidth=0.5)
 
-    # 눈금 정수로 표시
+    # 가운데 x축(y=0), y축(x=0)을 굵게 표시
+    ax.axhline(0, linewidth=2)
+    ax.axvline(0, linewidth=2)
+
+    # 정수 눈금
     ax.set_xticks(range(X_MIN, X_MAX + 1))
     ax.set_yticks(range(Y_MIN, Y_MAX + 1))
 
